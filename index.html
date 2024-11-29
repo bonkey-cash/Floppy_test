@@ -437,11 +437,10 @@ canvas {
 		const pipes = [];
         const pipeWidth = 64;
         let pipeGap = 200; 
-        let pipeSpeed = 12;
+        let pipeSpeed = 8;
         let score = 0;
         let gameRunning = false;
 		let pipeCreationInterval;
-        let speedUpdateInterval;
 
         const coins = [];
         const coinWidth = 24;
@@ -889,7 +888,6 @@ function startGame() {
     // Stop any running intervals or timers
 	clearInterval(pipeCreationInterval);
     clearInterval(pipeSpeedIncreaseInterval);
-    clearInterval(speedUpdateInterval);
 
     // Reset game parameters
     gameRunning = true;
@@ -901,7 +899,7 @@ function startGame() {
     turtle.velocity = 0;
 	pipes.length = 0;
     coins.length = 0;
-	pipeSpeed = 12;
+	pipeSpeed = 8;
 
     // Reset gravity-related parameters
     currentGravity = initialGravity; // Reset to initial gravity
@@ -980,7 +978,6 @@ function tweetScore() {
 function gameOver() {
     gameRunning = false;
 	clearInterval(pipeCreationInterval);
-    clearInterval(speedUpdateInterval);
 	clearInterval(pipeSpeedIncreaseInterval);
     backgroundMusic.pause();
     backgroundMusic.currentTime = 0;
@@ -1288,7 +1285,6 @@ function togglePause() {
         backgroundMusic.pause();
 		clearInterval(pipeCreationInterval);
 		clearInterval(pipeSpeedIncreaseInterval);
-        clearInterval(speedUpdateInterval);
         document.getElementById('pauseButton').textContent = 'Resume';
     }
 }
