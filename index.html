@@ -403,16 +403,15 @@ canvas {
         };
 
         let selectedCharacter = localStorage.getItem('selectedCharacter') || 'character1';
-        // Game speed scaler
-		const gamespeedmodifier = 1;
+
 		// Define initial and maximum gravity
-		const initialGravity = 0.25*gamespeedmodifier; // Starting gravity (low)
-		const maxGravity = 0.45*gamespeedmodifier;     // Maximum gravity (normal gameplay value)
+		const initialGravity = 0.25; // Starting gravity (low)
+		const maxGravity = 0.45;     // Maximum gravity (normal gameplay value)
 		const gravityIncreaseDuration = 1500; // Time (in ms) to reach max gravity
 
 		// Define initial and adjusted lift
-		const initialLift = -7.5*(gamespeedmodifier*1); // Stronger jump at low gravity
-		const maxLift = -10.0*(gamespeedmodifier*1);     // Normal jump at max gravity
+		const initialLift = -7.5; // Stronger jump at low gravity
+		const maxLift = -10;     // Normal jump at max gravity
 
 		let currentGravity = initialGravity;
 		let currentLift = initialLift;
@@ -438,7 +437,7 @@ canvas {
 		const pipes = [];
         const pipeWidth = 64;
         let pipeGap = 200; 
-        let pipeSpeed = 10*gamespeedmodifier;
+        let pipeSpeed = 12;
         let score = 0;
         let gameRunning = false;
 		let pipeCreationInterval;
@@ -517,58 +516,6 @@ canvas {
 			ctx.drawImage(moonSurfaceImage, moonSurfaceX + canvas.width, canvas.height - moonSurfaceImage.height, canvas.width, moonSurfaceImage.height);
 		}
 
-
-/*function createTopPipes() {
-    const topPipeHeight = topPipeImage.height; // Height of the top pipe image
-    const topPipeWidth = topPipeImage.width; // Width of the top pipe image
-	const bottomPipeHeight = bottomPipeImage.height; // Height of the bottom pipe image
-    const bottomPipeWidth = bottomPipeImage.width; // Width of the bottom pipe image
-    const moonSurfaceHeight = moonSurfaceImage.height; // Height of the moon surface image
-    const initialGap = 200; // The initial gap size between pipes
-
-    // Calculate the range for the bottom of the top pipe
-    const minTopPipeHeight = 100; // Minimum Y position from the top of the canvas
-    const maxTopPipeHeight = canvas.height - (initialGap + 1.5 * moonSurfaceHeight); // Maximum Y position
-
-    // Generate a random Y position for the bottom of the top pipe within the range
-    const topPipeY = Math.random() * (maxTopPipeHeight - minTopPipeHeight) + minTopPipeHeight - topPipeHeight;
-    const topPipeX = canvas.width; // Start at the right edge of the screen
-	const bottomPipeX = canvas.width; // Start at the right edge of the screen
-	const bottomPipeY = topPipeY + topPipeHeight + initialGap;
-
-    // Create the top pipe
-    pipes.push({
-        x: bottomPipeX,
-        y: topPipeY,
-        width: topPipeWidth,
-        height: topPipeHeight,
-		type: 'top'
-    });
-
-    // Create the bottom pipe	
-	    pipes.push({
-        x: bottomPipeX,
-        y: bottomPipeY,
-        width: bottomPipeWidth,
-        height: bottomPipeHeight,
-		type: 'bottom',
-        scored: false
-    });
-	
-	// Add a coin between the pipes with a 100% chance
-			if (Math.random() < 1/3) {
-				const coinY = topPipeY + topPipeHeight + (initialGap - coinHeight) / 2; // Center the coin in the gap
-				const coinX = canvas.width + (topPipeWidth / 2) - (coinWidth / 2); // Center the coin horizontally
-				coins.push({
-					x: coinX,
-					y: coinY,
-					width: coinWidth,
-					height: coinHeight,
-					collected: false
-				});
-			}
-}*/
-
 function createPipePair() {
     const topPipeHeight = topPipeImage.height;
 	const bottomPipeHeight = bottomPipeImage.height;
@@ -604,43 +551,37 @@ function createPipePair() {
 }
 
 
-// Function to draw the top pipes
-/*function drawTopPipes() {
-    pipes.forEach(pipe => {
-        if (pipe.type === 'top') {
-            // Draw the top pipe
-            ctx.drawImage(topPipeImage,pipe.x,pipe.y,pipe.width,pipe.height);
-        } else if (pipe.type === 'bottom') {
-            // Draw the bottom pipe
-            ctx.drawImage(bottomPipeImage,pipe.x,pipe.y,pipe.width,pipe.height);
-        }
-		// Draw the red collision box
-        //ctx.strokeStyle = 'red'; // Set stroke color
-        //ctx.lineWidth = 2; // Line thickness for visibility
-        //ctx.strokeRect(pipe.x, pipe.y, pipe.width, pipe.height); // Draw rectangle
-    });
-} */
-
-function drawPipes() {
+/*function drawPipes() {
     pipes.forEach(pipe => {
         // Draw top pipe
         ctx.drawImage(topPipeImage, pipe.x, pipe.top.y, pipe.top.width, pipe.top.height);
         
         // Draw bottom pipe
         ctx.drawImage(bottomPipeImage, pipe.x, pipe.bottom.y, pipe.bottom.width, pipe.bottom.height);
+		});
+}*/
+      
+
+function drawPipes() {
+    pipes.forEach(pipe => {
+        // Draw the top pipe
+        ctx.drawImage(topPipeImage, pipe.x, pipe.top.y, pipe.top.width, pipe.top.height);
+
+        // Draw the bottom pipe
+        ctx.drawImage(bottomPipeImage, pipe.x, pipe.bottom.y, pipe.bottom.width, pipe.bottom.height);
+
+        // Debugging: Draw the collision boxes
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+
+        // Top pipe collision box
+        ctx.strokeRect(pipe.x, pipe.top.y, pipe.top.width, pipe.top.height);
+
+        // Bottom pipe collision box
+        ctx.strokeRect(pipe.x, pipe.bottom.y, pipe.bottom.width, pipe.bottom.height);
     });
 }
-      
-		/*function updateTopPipes() {
-			pipes.forEach((pipe, index) => {
-				pipe.x -= pipeSpeed; // Move the pipe to the left
 
-				// Check if the pipe is completely offscreen
-				if (pipe.x + pipe.width < 0) {
-					pipes.splice(index, 1); // Remove the pipe from the array
-				}
-			});
-		}*/     
 
 function updatePipes() {
     pipes.forEach((pipe, index) => {
@@ -674,10 +615,6 @@ function updatePipes() {
                     drawCoin(coin);
                 }
             });
-        }
-
-        function updateSpeed() {
-            pipeSpeed += 0.5;
         }
 
         const characterImages = {};
@@ -714,54 +651,16 @@ function updatePipes() {
 });
 
 
-
-
-
-/*function detectCollision() {
-    const turtleLeft = turtle.x + turtle.width * 0.2; // Left side of the turtle (20% inward)
-    const turtleRight = turtle.x + turtle.width * 0.8; // Right side of the turtle (80% inward)
-    const turtleTop = turtle.y + turtle.height * 0.25; // Top side of the turtle (25% inward)
-    const turtleBottom = turtle.y + turtle.height * 0.75; // Bottom side of the turtle (75% inward)
-
-    // Draw turtle collision box for debugging
-    //ctx.strokeStyle = 'red';
-    //ctx.lineWidth = 2;
-    //ctx.strokeRect(turtleLeft, turtleTop, turtleRight - turtleLeft, turtleBottom - turtleTop);
-
-    // Check for canvas top or bottom collision
-    if (turtleTop <= 0 || turtleBottom >= canvas.height - moonSurfaceImage.height) {
-        collisionSound.play();
-		return true; // Collision detected
-    }
-
-    // Check for pipe collision
-    for (let i = 0; i < pipes.length; i++) {
-        const pipe = pipes[i];
-        const pipeLeft = pipe.x;
-        const pipeRight = pipe.x + pipe.width;
-        const pipeTop = pipe.y;
-        const pipeBottom = pipe.y + pipe.height;
-
-        // Check if turtle collides with the pipe
-        if (
-            turtleRight > pipeLeft &&
-            turtleLeft < pipeRight &&
-            turtleBottom > pipeTop &&
-            turtleTop < pipeBottom
-        ) {
-            collisionSound.play();
-			return true; // Collision detected
-        }
-    }
-
-    return false; // No collision detected
-}*/
-
 function detectCollision() {
     const turtleLeft = turtle.x + turtle.width * 0.2;
     const turtleRight = turtle.x + turtle.width * 0.8;
     const turtleTop = turtle.y + turtle.height * 0.25;
     const turtleBottom = turtle.y + turtle.height * 0.75;
+
+    // Draw turtle collision box for debugging
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(turtleLeft, turtleTop, turtleRight - turtleLeft, turtleBottom - turtleTop);
 
     // Canvas boundary collision
     if (turtleTop <= 0 || turtleBottom >= canvas.height - moonSurfaceImage.height) {
@@ -834,89 +733,9 @@ function updateGravityAndLift() {
     turtle.lift = currentLift;
 }
 
-
-// Update function modified to include gravity updates
-/*function update() {
-    if (!gameRunning) return;
-    // Update gravity and lift
-    updateGravityAndLift();
-
-    clearCanvas();
-    drawTurtle();
-    // Draw and move top pipes
-    drawTopPipes();
-	
-    drawCoins();
-    turtle.velocity += turtle.gravity; // Apply the updated gravity
-    turtle.y += turtle.velocity;
-	updateTopPipes();
-    updateCoins();
-
-    if (detectCollision()) {
-        gameOver();
-        return; // Exit the update loop if a collision is detected
-    }
-
-    detectCoinCollection();
-
-	for (let i = 1; i < pipes.length; i += 2) {
-        if (turtle.x > (pipes[i].x*2/3) && !pipes[i].scored) {
-            score++;
-            //console.log(`Scoring pipe ${i}, X: ${pipes[i].x}, Scored: ${pipes[i].scored}, Turtle position ${turtle.x},pipeWidth ${pipeWidth}`);
-			pipes[i].scored = true;
-            updateScore();
-        }
-    }
-
-    requestAnimationFrame(update);
-}*/
-
 let lastFrameTime = 0;
 const fps = 60;
 const frameDuration = 1000 / fps; // Duration of each frame in milliseconds
-
-/*function update(currentTime) {
-    if (!gameRunning) return;
-
-    // Calculate the time elapsed since the last frame
-    const deltaTime = currentTime - lastFrameTime;
-
-    // Only update the game if enough time has passed
-    if (deltaTime >= frameDuration) {
-        lastFrameTime = currentTime;
-
-        // Game logic and rendering
-        updateGravityAndLift();
-        clearCanvas();
-        drawTurtle();
-        drawTopPipes();
-        drawCoins();
-        turtle.velocity += turtle.gravity;
-        turtle.y += turtle.velocity;
-        updateTopPipes();
-        updateCoins();
-
-        if (detectCollision()) {
-            gameOver();
-            return; // Exit the update loop if a collision is detected
-        }
-
-        detectCoinCollection();
-
-		for (let i = 1; i < pipes.length; i += 2) {
-			if (turtle.x > (pipes[i].x*2/3) && !pipes[i].scored) {
-				score++;
-				//console.log(`Scoring pipe ${i}, X: ${pipes[i].x}, Scored: ${pipes[i].scored}, Turtle position ${turtle.x},pipeWidth ${pipeWidth}`);
-				pipes[i].scored = true;
-				updateScore();
-			}
-		}
-
-    }
-
-    // Request the next animation frame
-    requestAnimationFrame(update);
-}*/
 
 function update(currentTime) {
     if (!gameRunning) return;
@@ -1082,7 +901,7 @@ function startGame() {
     turtle.velocity = 0;
 	pipes.length = 0;
     coins.length = 0;
-	pipeSpeed = 10*gamespeedmodifier;
+	pipeSpeed = 12;
 
     // Reset gravity-related parameters
     currentGravity = initialGravity; // Reset to initial gravity
@@ -1111,9 +930,7 @@ function startGame() {
     updateScore();
     requestAnimationFrame(update);
 	pipeCreationInterval = setInterval(createPipePair, 2000);
-	pipeCreationInterval = setInterval(createTopPipes, 2000);
-	pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 5000);
-    speedUpdateInterval = setInterval(updateSpeed, 5000);
+	pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 4000);
 	});
 	
 	
@@ -1140,7 +957,7 @@ function loginToPlayFab(username, callback) {
 
 
 function increasePipeSpeed() {
-    pipeSpeed += 0.5; // Pas de snelheidstoename aan zoals gewenst
+    pipeSpeed += 1; // Pas de snelheidstoename aan zoals gewenst
 }
 
 document.querySelectorAll('button').forEach(button => {
@@ -1461,9 +1278,8 @@ function togglePause() {
         gameRunning = true;
         backgroundMusic.play();
         update();
-		pipeCreationInterval = setInterval(createTopPipes, 2000);
+		pipeCreationInterval = setInterval(createPipePair, 2000);
 		pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 5000);
-        speedUpdateInterval = setInterval(updateSpeed, 5000);
         document.getElementById('pauseButton').textContent = 'Pause';
     } else {
         // Pause the game
