@@ -984,9 +984,11 @@ function updatePurchasedCharacters() {
         }
 		
 		function playJumpSound() {
-			jumpSound.pause();  // Stop the current playback
-			jumpSound.currentTime = 0;  // Reset to the beginning
-			jumpSound.play();  // Play the sound
+			if (gameRunning) { // Only play the sound if the game is running
+				jumpSound.pause();  // Stop the current playback
+				jumpSound.currentTime = 0;  // Reset to the beginning
+				jumpSound.play();  // Play the sound
+			}
 		}
 		
 		function playCoinSound() {
