@@ -571,7 +571,7 @@ canvas {
 
 function createPipePair() {
     const topPipeHeight = topPipeImage.height;
-    const bottomPipeHeight = bottomPipeImage.height;
+	const bottomPipeHeight = bottomPipeImage.height;
     const moonSurfaceHeight = moonSurfaceImage.height;
 
     const initialGap = 200;
@@ -589,6 +589,18 @@ function createPipePair() {
         bottom: { y: bottomPipeY, width: pipeWidth, height: bottomPipeHeight },
         scored: false
     });
+	// Add a coin between the pipes with a 100% chance
+		if (Math.random() < 1/3) {
+			const coinY = topPipeY + topPipeHeight + (initialGap - coinHeight) / 2; // Center the coin in the gap
+			const coinX = canvas.width + (pipeWidth / 2) - (coinWidth / 2); // Center the coin horizontally
+			coins.push({
+				x: coinX,
+				y: coinY,
+				width: coinWidth,
+				height: coinHeight,
+				collected: false
+			});
+		}
 }
 
 
@@ -978,10 +990,20 @@ function updatePurchasedCharacters() {
     localStorage.setItem('purchasedCharacters', JSON.stringify(purchasedCharacters));
 }
 
+function jump() {
+    const jumpHeight = canvas.height * 0.14; // Target jump height (10% of canvas height)
+    const timeToApex = 0.5; // Time in seconds to reach the jump's highest point
+    const frameRate = 60; // Assuming a fixed frame rate of 60 fps
 
-        function jump() {
+    // Calculate the velocity required to reach the jump height in the given time
+    const gravity = (2 * jumpHeight) / Math.pow(timeToApex * frameRate, 2); // Gravity
+    turtle.velocity = -(gravity * timeToApex * frameRate); // Negative for upward movement
+}
+
+
+        /*function jump() {
             turtle.velocity = turtle.lift;
-        }
+        }*/
 		
 		function playJumpSound() {
 			if (gameRunning) { // Only play the sound if the game is running
