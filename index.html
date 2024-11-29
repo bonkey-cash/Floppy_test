@@ -406,13 +406,13 @@ canvas {
         // Game speed scaler
 		const gamespeedmodifier = 1;
 		// Define initial and maximum gravity
-		const initialGravity = 0.23; // Starting gravity (low)
-		const maxGravity = 0.43;     // Maximum gravity (normal gameplay value)
+		const initialGravity = 0.25*gamespeedmodifier; // Starting gravity (low)
+		const maxGravity = 0.45*gamespeedmodifier;     // Maximum gravity (normal gameplay value)
 		const gravityIncreaseDuration = 1500; // Time (in ms) to reach max gravity
 
 		// Define initial and adjusted lift
-		const initialLift = -5; // Stronger jump at low gravity
-		const maxLift = -7.75;     // Normal jump at max gravity
+		const initialLift = -7.5*(gamespeedmodifier*1); // Stronger jump at low gravity
+		const maxLift = -10.0*(gamespeedmodifier*1);     // Normal jump at max gravity
 
 		let currentGravity = initialGravity;
 		let currentLift = initialLift;
@@ -438,7 +438,7 @@ canvas {
 		const pipes = [];
         const pipeWidth = 64;
         let pipeGap = 200; 
-        let pipeSpeed = 2.25;
+        let pipeSpeed = 10*gamespeedmodifier;
         let score = 0;
         let gameRunning = false;
 		let pipeCreationInterval;
@@ -527,7 +527,7 @@ function createTopPipes() {
     const initialGap = 200; // The initial gap size between pipes
 
     // Calculate the range for the bottom of the top pipe
-    const minTopPipeHeight = 50; // Minimum Y position from the top of the canvas
+    const minTopPipeHeight = 100; // Minimum Y position from the top of the canvas
     const maxTopPipeHeight = canvas.height - (initialGap + 1.5 * moonSurfaceHeight); // Maximum Y position
 
     // Generate a random Y position for the bottom of the top pipe within the range
@@ -614,7 +614,7 @@ function drawTopPipes() {
         }
 
         function updateSpeed() {
-            pipeSpeed += 0.075;
+            pipeSpeed += 0.5;
         }
 
         const characterImages = {};
@@ -744,7 +744,7 @@ function updateGravityAndLift() {
 
 
 // Update function modified to include gravity updates
-function update() {
+/*function update() {
     if (!gameRunning) return;
     // Update gravity and lift
     updateGravityAndLift();
@@ -777,7 +777,53 @@ function update() {
     }
 
     requestAnimationFrame(update);
+}*/
+
+let lastFrameTime = 0;
+const fps = 60;
+const frameDuration = 1000 / fps; // Duration of each frame in milliseconds
+
+function update(currentTime) {
+    if (!gameRunning) return;
+
+    // Calculate the time elapsed since the last frame
+    const deltaTime = currentTime - lastFrameTime;
+
+    // Only update the game if enough time has passed
+    if (deltaTime >= frameDuration) {
+        lastFrameTime = currentTime;
+
+        // Game logic and rendering
+        updateGravityAndLift();
+        clearCanvas();
+        drawTurtle();
+        drawTopPipes();
+        drawCoins();
+        turtle.velocity += turtle.gravity;
+        turtle.y += turtle.velocity;
+        updateTopPipes();
+        updateCoins();
+
+        if (detectCollision()) {
+            gameOver();
+            return; // Exit the update loop if a collision is detected
+        }
+
+        detectCoinCollection();
+
+        for (let i = 1; i < pipes.length; i += 2) {
+            if (turtle.x > (pipes[i].x * 2 / 3) && !pipes[i].scored) {
+                score++;
+                pipes[i].scored = true;
+                updateScore();
+            }
+        }
+    }
+
+    // Request the next animation frame
+    requestAnimationFrame(update);
 }
+
 
 let previousScore = 0;
        // Function to update the score and play the sound effect
@@ -894,7 +940,7 @@ function startGame() {
     turtle.velocity = 0;
 	pipes.length = 0;
     coins.length = 0;
-	pipeSpeed = 2.25;
+	pipeSpeed = 10*gamespeedmodifier;
 
     // Reset gravity-related parameters
     currentGravity = initialGravity; // Reset to initial gravity
@@ -921,10 +967,10 @@ function startGame() {
 
     // Update score and start the game loop
     updateScore();
-    update();
-	pipeCreationInterval = setInterval(createTopPipes, 1750);
-	pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 2500);
-    speedUpdateInterval = setInterval(updateSpeed, 2500);
+    requestAnimationFrame(update);
+	pipeCreationInterval = setInterval(createTopPipes, 2000);
+	pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 5000);
+    speedUpdateInterval = setInterval(updateSpeed, 5000);
 	});
 	
 	
@@ -951,7 +997,7 @@ function loginToPlayFab(username, callback) {
 
 
 function increasePipeSpeed() {
-    pipeSpeed += 0.075; // Pas de snelheidstoename aan zoals gewenst
+    pipeSpeed += 0.5; // Pas de snelheidstoename aan zoals gewenst
 }
 
 document.querySelectorAll('button').forEach(button => {
@@ -1010,7 +1056,7 @@ function submitHighscore(username, score) {
         // Then update the player's statistics
         PlayFabClientSDK.UpdatePlayerStatistics({
             Statistics: [{
-                StatisticName: "Highscore_mobile",
+                StatisticName: "Highscore",
                 Value: score
             }]
         }, function (result) {
@@ -1030,7 +1076,7 @@ function fetchHighscores() {
     PlayFabClientSDK.GetLeaderboard({
         StartPosition: 0,
         MaxResultsCount: 10,
-        StatisticName: "Highscore_mobile"
+        StatisticName: "Highscore"
     }, function (result) {
         console.log("Leaderboard data:", result.data.Leaderboard);
         const leaderboardData = result.data.Leaderboard;
@@ -1272,9 +1318,9 @@ function togglePause() {
         gameRunning = true;
         backgroundMusic.play();
         update();
-		pipeCreationInterval = setInterval(createTopPipes, 1750);
-		pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 2500);
-        speedUpdateInterval = setInterval(updateSpeed, 2500);
+		pipeCreationInterval = setInterval(createTopPipes, 2000);
+		pipeSpeedIncreaseInterval = setInterval(increasePipeSpeed, 5000);
+        speedUpdateInterval = setInterval(updateSpeed, 5000);
         document.getElementById('pauseButton').textContent = 'Pause';
     } else {
         // Pause the game
